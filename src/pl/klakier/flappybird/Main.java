@@ -20,8 +20,8 @@ public class Main implements Runnable {
 
 	// The window handle
 	private long window;
-	private int width = 1280;
-	private int height = 720;
+	private int width = 800;
+	private int height = 600;
 
 	private Thread thread;
 	private Boolean running = false;
