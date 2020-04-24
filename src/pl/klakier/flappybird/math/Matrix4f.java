@@ -2,6 +2,8 @@ package pl.klakier.flappybird.math;
 
 import java.nio.FloatBuffer;
 
+import pl.klakier.flappybird.utils.BufferUtils;
+
 public class Matrix4f {
 
 	public static final int DIMENSION = 4;
@@ -83,7 +85,6 @@ public class Matrix4f {
 	}
 
 	public FloatBuffer toFloatBuffer() {
-		// TODO
-		return null;
+		return BufferUtils.createFloatBuffer(elements);
 	}
 }
