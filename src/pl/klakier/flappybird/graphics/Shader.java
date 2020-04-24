@@ -14,6 +14,8 @@ public class Shader {
 	public static final int VERTEX_ATTRIB = 0;
 	public static final int TCOORD_ATTRIB = 0;
 	
+	public static Shader BG;
+	
 	private final int ID;
 	private Map<String, Integer> locationCache = new HashMap<String, Integer>();
 
@@ -21,6 +23,10 @@ public class Shader {
 		ID = ShaderUtils.load(vertPath, fragPath);
 	}
 
+	public static void loadAll() {
+		BG = new Shader("shaders/bg.vert", "shaders/bg.frag");
+	}
+	
 	public void bind() {
 		glUseProgram(ID);
 	}

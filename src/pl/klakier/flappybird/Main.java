@@ -12,7 +12,10 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
+import pl.klakier.flappybird.graphics.Shader;
 import pl.klakier.flappybird.input.Input;
+import pl.klakier.flappybird.level.Level;
+import pl.klakier.flappybird.math.Matrix4f;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 
@@ -20,12 +23,16 @@ public class Main implements Runnable {
 
 	// The window handle
 	private long window;
+	public static float aspectRatio = 16.0f / 9.0f;
+	public static float quarterWidth = 10.0f;
 	private int width = 800;
-	private int height = 600;
+	private int height = (int) ((float) width / aspectRatio);
 
 	private Thread thread;
 	private Boolean running = false;
 
+	private Level level;
+	
 	public static void main(String[] args) {
 		new Main().start();
 
@@ -80,16 +87,16 @@ public class Main implements Runnable {
 		}
 
 		glfwSetKeyCallback(window, new Input());
-		
+
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
-		
+
 		// Enable v-sync
 		glfwSwapInterval(1);
 
 		// Make the window visible
 		glfwShowWindow(window);
-		
+
 		// This line is critical for LWJGL's interoperation with GLFW's
 		// OpenGL context, or any context that is managed externally.
 		// LWJGL detects the context that is current in the current thread,
@@ -99,26 +106,36 @@ public class Main implements Runnable {
 
 		// Set the clear color
 		glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-		
-		//Enable depth test
+
+		// Enable depth test
 		glEnable(GL_DEPTH_TEST);
-		
+
 		System.out.print(glGetString(GL_VERSION));
 
+		// Load Shaders
+		Shader.loadAll();
+
+		Matrix4f pr_matrix = Matrix4f.orthographic(-quarterWidth, quarterWidth, -quarterWidth / aspectRatio,
+				quarterWidth / aspectRatio, 1.0f, -1.0f);
+		Shader.BG.setUniformMat4f("pr_matrix", pr_matrix);
+
+		//level = new Level();
+		
 	}
 
 	private void update() {
 		glfwPollEvents();
-		
-		if(Input.isPressed(GLFW_KEY_ESCAPE))
+
+		if (Input.isPressed(GLFW_KEY_ESCAPE))
 			glfwSetWindowShouldClose(window, true);
-		
+
 	}
 
 	private void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-				
+		//level.render();
+		
 		glfwSwapBuffers(window); // swap the color buffers
 	}
 
