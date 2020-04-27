@@ -14,8 +14,11 @@ public class Bird {
 	private VertexArray vaoBird;
 	private Texture texBird;
 	private float quarterWidth = Level.quarterWidth;
+	private float aspectRatio = Level.aspectRatio;
+	private float quarterHeight = quarterWidth / aspectRatio;
 	private float size = quarterWidth / 10;
 	private Vector3f posVec = new Vector3f();
+	private float rotZ = 0;
 	private float yScrollStepFallDown = size / 200;
 	private float yScrollStepJump = size / 10;
 	private float delta;
@@ -56,17 +59,25 @@ public class Bird {
 	}
 
 	public void onUpdate() {
-		posVec.y -= delta;
+		boolean outOfScreenDown = (posVec.y + size < -quarterHeight) ? true : false;
+
+		if (!outOfScreenDown)
+			posVec.y -= delta;
 		if (Input.isPressed(GLFW_KEY_SPACE)) {
 			delta = -yScrollStepJump;
+			if (outOfScreenDown)
+				posVec.y -= delta;
 		} else {
-			delta += yScrollStepFallDown;
+			if (!outOfScreenDown)
+				delta += yScrollStepFallDown;
 		}
+
+		rotZ = -delta * 90.0f / (quarterWidth / 10);
 	}
 
 	public void render() {
 		Shader.BIRD.bind();
-		Shader.BIRD.setUniformMat4f("mv_matrix", Matrix4f.translate(posVec));
+		Shader.BIRD.setUniformMat4f("mv_matrix", Matrix4f.translate(posVec).multiply(Matrix4f.rotateZ(rotZ)));
 		vaoBird.render();
 		Shader.BIRD.unBind();
 	}

@@ -10,11 +10,11 @@ import pl.klakier.flappybird.math.Vector3f;
 public class Level {
 
 	private Bird bird;
-	private VertexArray vaoBackground;
+	private VertexArray vaoBackground;.
 	private Texture texBackground;
 	private int map = 0;
 	public static float quarterWidth;
-	private float aspectRatio;
+	public static float aspectRatio;
 	private float textureRatio;
 	private float tex_half_height;
 	private float tex_half_width;
