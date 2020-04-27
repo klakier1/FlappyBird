@@ -26,21 +26,20 @@ public class Matrix4f {
 
 		return result;
 	}
+	
+	public static Matrix4f orthographic(float left, float right, float bottom, float top, float near, float far) {
+		Matrix4f result = identity();
+		
+		result.elements[0 + 0 * 4] = 2.0f / (right - left);
 
-	public static Matrix4f orthographic(float left, float right, float top, float bottom, float near, float far) {
-		Matrix4f result = new Matrix4f();
+		result.elements[1 + 1 * 4] = 2.0f / (top - bottom);
 
-		result.elements[0 + 0 * DIMENSION] = 2.0f / (right - left);
-
-		result.elements[1 + 1 * DIMENSION] = 2.0f / (top - bottom);
-
-		result.elements[2 + 2 * DIMENSION] = -2.0f / (far - near);
-
-		result.elements[0 + 3 * DIMENSION] = -((right + left) / (right - left));
-		result.elements[1 + 3 * DIMENSION] = -((top + bottom) / (top - bottom));
-		result.elements[2 + 3 * DIMENSION] = -((far + near) / (far - near));
-		result.elements[3 + 3 * DIMENSION] = 1;
-
+		result.elements[2 + 2 * 4] = 2.0f / (near - far);
+		
+		result.elements[0 + 3 * 4] = (left + right) / (left - right);
+		result.elements[1 + 3 * 4] = (bottom + top) / (bottom - top);
+		result.elements[2 + 3 * 4] = (far + near) / (far - near);
+		
 		return result;
 	}
 

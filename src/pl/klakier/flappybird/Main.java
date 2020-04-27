@@ -24,18 +24,29 @@ public class Main implements Runnable {
 	// The window handle
 	private long window;
 	public static float aspectRatio = 16.0f / 9.0f;
-	public static float quarterWidth = 10.0f;
-	private int width = 800;
+	public static float quarterWidth = 10f;
+	private int width = 1280;
 	private int height = (int) ((float) width / aspectRatio);
-
+	public static final Matrix4f pr_matrix = Matrix4f.orthographic(-quarterWidth, quarterWidth, -quarterWidth / aspectRatio,
+			quarterWidth / aspectRatio, 1.0f, -1.0f);
+	
 	private Thread thread;
 	private Boolean running = false;
 
 	private Level level;
+
+	// Main timer - frames limit
+	private long currentNanos;
+	private long prevNanos;
+	private final int FPS_LIMIT = 60;
+	private double interval = Math.pow(10.0, 9.0) / FPS_LIMIT;
+
+	// FPS
+	private int fps;
 	
 	public static void main(String[] args) {
-		new Main().start();
 
+		new Main().start();
 	}
 
 	public void start() {
@@ -48,7 +59,15 @@ public class Main implements Runnable {
 	@Override
 	public void run() {
 		init();
+		currentNanos = System.nanoTime();
+		prevNanos = currentNanos - (long)interval;
 		while (running) {
+
+			while (currentNanos - prevNanos < interval) {
+				currentNanos = System.nanoTime();
+			}
+			prevNanos = currentNanos;
+			
 			update();
 			render();
 
@@ -110,22 +129,20 @@ public class Main implements Runnable {
 		// Enable depth test
 		glEnable(GL_DEPTH_TEST);
 
-		System.out.print(glGetString(GL_VERSION));
+		System.out.println(glGetString(GL_VERSION));
 
-		// Load Shaders
+		// Load Shader
 		Shader.loadAll();
 
-		Matrix4f pr_matrix = Matrix4f.orthographic(-quarterWidth, quarterWidth, -quarterWidth / aspectRatio,
-				quarterWidth / aspectRatio, 1.0f, -1.0f);
-		Shader.BG.setUniformMat4f("pr_matrix", pr_matrix);
+		level = new Level();
 
-		//level = new Level();
-		
 	}
 
 	private void update() {
 		glfwPollEvents();
 
+		level.onUpdate();
+		
 		if (Input.isPressed(GLFW_KEY_ESCAPE))
 			glfwSetWindowShouldClose(window, true);
 
@@ -134,7 +151,10 @@ public class Main implements Runnable {
 	private void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-		//level.render();
+		level.render();
+
+		if(glGetError() != 0)
+			System.out.println(glGetError());
 		
 		glfwSwapBuffers(window); // swap the color buffers
 	}

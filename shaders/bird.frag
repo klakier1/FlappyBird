@@ -10,7 +10,9 @@ in DATA {
 uniform sampler2D tex;
 
 void main() {
-	color = (fs_in.pos + 10)/ 20; //postion to Color
+	//color = (fs_in.pos + 10)/ 20; //postion to Color
 	//color = vec4(1.0, 1.0, 1.0, 1.0) - vec4(fs_in.pos/10);
 	color = texture(tex, fs_in.tc);
+	if(color.a != 1.0)
+		discard;
 }

@@ -3,10 +3,8 @@ package pl.klakier.flappybird.graphics;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -19,11 +17,11 @@ public class Texture {
 	private int height;
 	private final int ID;
 
-	public Texture(String path) {
-		this.ID = load(path);
+	public Texture(String path, int unit) {
+		this.ID = load(path, unit);
 	}
 
-	private int load(String path) {
+	private int load(String path, int unit) {
 		int[] pixels = null;
 		try {
 			BufferedImage image = ImageIO.read(new FileInputStream(path));
@@ -32,7 +30,7 @@ public class Texture {
 			pixels = new int[width * height];
 			image.getRGB(0, 0, width, height, pixels, 0, width);
 		} catch (FileNotFoundException e) {
-			System.err.print("File " + path + " not found");
+			System.err.println("File " + path + " not found");
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -48,7 +46,8 @@ public class Texture {
 
 			data[i] = a << 24 | b << 16 | g << 8 | r;
 		}
-
+		
+		glActiveTexture(GL_TEXTURE0 + unit);
 		int id = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, id);
 
@@ -65,7 +64,7 @@ public class Texture {
 	public void bind() {
 		bind(0);
 	}
-	
+
 	public void bind(int unit) {
 		glActiveTexture(GL_TEXTURE0 + unit);
 		glBindTexture(GL_TEXTURE_2D, ID);
@@ -73,5 +72,17 @@ public class Texture {
 
 	public void unBind() {
 		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public int getID() {
+		return ID;
 	}
 }
