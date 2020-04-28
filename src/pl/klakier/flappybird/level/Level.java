@@ -10,7 +10,7 @@ import pl.klakier.flappybird.math.Vector3f;
 public class Level {
 
 	private Bird bird;
-	private VertexArray vaoBackground;.
+	private VertexArray vaoBackground;
 	private Texture texBackground;
 	private int map = 0;
 	public static float quarterWidth;
@@ -29,7 +29,7 @@ public class Level {
 		textureRatio = (float) texBackground.getWidth() / (float) texBackground.getHeight();
 		tex_half_height = quarterWidth / aspectRatio;
 		tex_half_width = tex_half_height * textureRatio;
-		xScrollStep = tex_half_width / 60;
+		xScrollStep = tex_half_width / 160;
 		map = (int) (quarterWidth / (tex_half_width)) + 2;
 
 		// @formatter:off
@@ -63,7 +63,7 @@ public class Level {
 		Shader.BG.unBind();
 
 		bird = new Bird();
-
+		Pipe.create();
 	}
 
 	public void onUpdate() {
@@ -71,13 +71,12 @@ public class Level {
 		if (xScroll < -(tex_half_width * 2))
 			xScroll = 0.0f;
 		
+		Pipe.onUpdate();
 		bird.onUpdate();
 	}
 
 	public void render() {
-
-		bird.render();
-
+		Pipe.render();
 		Shader.BG.bind();
 		vaoBackground.bind();
 		for (int i = 0; i < map; i++) {
@@ -88,8 +87,9 @@ public class Level {
 		vaoBackground.unBind();
 		Shader.BG.unBind();
 
+		Pipe.render();
 		bird.render();
-
+		
 	}
 
 	public float getxScrollStep() {

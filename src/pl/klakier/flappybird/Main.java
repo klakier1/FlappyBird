@@ -24,11 +24,11 @@ public class Main implements Runnable {
 	// The window handle
 	private long window;
 	public static float aspectRatio = 16.0f / 9.0f;
-	public static float quarterWidth = 10f;
+	public static float quarterWidth = 3f;
 	private int width = 1280;
 	private int height = (int) ((float) width / aspectRatio);
 	public static final Matrix4f pr_matrix = Matrix4f.orthographic(-quarterWidth, quarterWidth, -quarterWidth / aspectRatio,
-			quarterWidth / aspectRatio, 1.0f, -1.0f);
+			quarterWidth / aspectRatio, -1.0f, 1.0f);
 	
 	private Thread thread;
 	private Boolean running = false;
@@ -74,6 +74,10 @@ public class Main implements Runnable {
 			if (glfwWindowShouldClose(window))
 				running = false;
 		}
+		
+		glfwDestroyWindow(window);
+		glfwTerminate();
+		
 	}
 
 	private void init() {
@@ -127,7 +131,7 @@ public class Main implements Runnable {
 		glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
 		// Enable depth test
-		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_DEPTH_TEST);
 
 		System.out.println(glGetString(GL_VERSION));
 
