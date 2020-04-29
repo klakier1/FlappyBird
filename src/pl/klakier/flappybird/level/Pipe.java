@@ -13,13 +13,14 @@ public class Pipe {
 
 	private Vector3f position;
 	private int top;
+	private boolean hasCollision;
 
 	private static float quarterWidth = Level.quarterWidth;
 	private static float aspectRatio = Level.aspectRatio;
 	private static float quarterHeight = quarterWidth / aspectRatio;
 	private static VertexArray vaoPipe;
 	private static Texture texPipe;
-	private static final float OFFSET = quarterWidth * 0.2f;
+	private static final float OFFSET = quarterWidth * 0.8f;
 	private static final float DISTANCE = quarterWidth * 0.3f;
 	private static final float GAP = quarterHeight * 0.7f;
 	private static final int COUNT = (int) ((quarterWidth / DISTANCE) + 1);
@@ -38,8 +39,32 @@ public class Pipe {
 		return position;
 	}
 
-	public void setPosition(Vector3f position) {
-		this.position = position;
+	public boolean isHasCollision() {
+		return hasCollision;
+	}
+
+	public void setHasCollision(boolean hasCollision) {
+		this.hasCollision = hasCollision;
+	}
+
+	public static float getHeight() {
+		return HEIGHT;
+	}
+
+	public static float getWidth() {
+		return WIDTH;
+	}
+
+	public static int getCount() {
+		return COUNT * 2;
+	}
+
+	public static float getGap() {
+		return GAP;
+	}
+
+	public static Pipe[] getPipes() {
+		return pipes;
 	}
 
 	public static void onUpdate() {
@@ -51,7 +76,7 @@ public class Pipe {
 				pipes[i].position.x = COUNT * DISTANCE;
 				pipes[i + 1].position.x = COUNT * DISTANCE;
 
-				pipes[i].position.y = (random.nextFloat() - 0.5f);
+				pipes[i].position.y = getRandomY();
 				pipes[i + 1].position.y = pipes[i].getPosition().y - HEIGHT - GAP;
 			}
 		}
@@ -65,6 +90,7 @@ public class Pipe {
 		vaoPipe.bind();
 		for (Pipe pipe : pipes) {
 			Shader.PIPE.setUniform1i("isTop", pipe.top);
+			Shader.PIPE.setUniform1i("hasColl", pipe.hasCollision ? 1 : 0);
 			Shader.PIPE.setUniformMat4f("mv_matrix", Matrix4f.translate(pipe.position));
 			vaoPipe.draw();
 		}
@@ -77,10 +103,10 @@ public class Pipe {
 
 		// @formatter:off
 		float[] vertices = new float[] { 
-				-WIDTH/2, HEIGHT + GAP/2, 0.0f, 
-				-WIDTH/2,          GAP/2, 0.0f, 
-				 WIDTH/2,          GAP/2, 0.0f,
-				 WIDTH/2, HEIGHT + GAP/2, 0.0f 
+				-WIDTH/2,  HEIGHT + GAP/2, 0.0f, 
+				-WIDTH/2,           GAP/2, 0.0f, 
+				 WIDTH/2,           GAP/2, 0.0f,
+				 WIDTH/2,  HEIGHT + GAP/2, 0.0f 
 		};
 
 		byte[] indices = new byte[] { 
@@ -107,10 +133,14 @@ public class Pipe {
 
 		pipes = new Pipe[COUNT * 2];
 		for (int i = 0; i < COUNT * 2; i += 2) {
-			pipes[i] = new Pipe(new Vector3f(OFFSET + i * DISTANCE, (random.nextFloat() - 0.5f), 0.0f), true);
-			pipes[i + 1] = new Pipe(pipes[i].getPosition().add(0f, - HEIGHT - GAP, 0f), false);
+			pipes[i] = new Pipe(new Vector3f(OFFSET + i * DISTANCE, getRandomY(), 0.0f), true);
+			pipes[i + 1] = new Pipe(pipes[i].getPosition().add(0f, -HEIGHT - GAP, 0f), false);
 		}
 
+	}
+
+	private static float getRandomY() {
+		return (random.nextFloat() - 0.5f) * (quarterWidth / 2);
 	}
 
 }

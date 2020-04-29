@@ -70,7 +70,9 @@ public class Level {
 		xScroll -= xScrollStep;
 		if (xScroll < -(tex_half_width * 2))
 			xScroll = 0.0f;
-		
+
+		collision();
+
 		Pipe.onUpdate();
 		bird.onUpdate();
 	}
@@ -89,7 +91,36 @@ public class Level {
 
 		Pipe.render();
 		bird.render();
-		
+
+	}
+
+	public boolean collision() {
+		float bxL = bird.getPosVec().x - bird.getSize() * 0.8f / 2;
+		float bxR = bird.getPosVec().x + bird.getSize() * 0.8f / 2;
+		float byB = bird.getPosVec().y - bird.getSize() * 0.8f / 2;
+		float byT = bird.getPosVec().y + bird.getSize() * 0.8f / 2;
+
+		float pxL, pxR, pyT, pyB;
+		final Pipe[] pipes = Pipe.getPipes();
+
+		for (int i = 0; i < Pipe.getCount(); i++)
+			pipes[i].setHasCollision(false);
+
+		for (int i = 0; i < Pipe.getCount(); i += 2) {
+			pxL = pipes[i].getPosition().x - Pipe.getWidth() / 2;
+			pxR = pipes[i].getPosition().x + Pipe.getWidth() / 2;
+			pyT = pipes[i].getPosition().y + Pipe.getGap() / 2; // BOTTOM OF UPPER PIPE
+			pyB = pipes[i].getPosition().y - Pipe.getGap() / 2;
+
+			if (pxL < bxR && pxR > bxL) {
+				if (pyT < byT)
+					pipes[i].setHasCollision(true);
+				else if (pyB > byB)
+					pipes[i + 1].setHasCollision(true);
+			}
+		}
+
+		return false;
 	}
 
 	public float getxScrollStep() {

@@ -81,4 +81,12 @@ public class Bird {
 		vaoBird.render();
 		Shader.BIRD.unBind();
 	}
+
+	public float getSize() {
+		return size;
+	}
+
+	public Vector3f getPosVec() {
+		return posVec;
+	}
 }

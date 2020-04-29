@@ -24,7 +24,7 @@ public class Main implements Runnable {
 	// The window handle
 	private long window;
 	public static float aspectRatio = 16.0f / 9.0f;
-	public static float quarterWidth = 3f;
+	public static float quarterWidth = 10f;
 	private int width = 1280;
 	private int height = (int) ((float) width / aspectRatio);
 	public static final Matrix4f pr_matrix = Matrix4f.orthographic(-quarterWidth, quarterWidth, -quarterWidth / aspectRatio,
