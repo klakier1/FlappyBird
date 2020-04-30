@@ -10,6 +10,7 @@ in DATA {
 uniform sampler2D tex;
 uniform int isTop;
 uniform int hasColl;
+uniform vec2 birdPos;
 
 void main() {
 	//color = (fs_in.pos + 10)/ 20; //postion to Color
@@ -24,5 +25,7 @@ void main() {
 
 	if (hasColl == 1)
 		color.r = 0.7;
+
+	color *= length(birdPos - fs_in.pos.xy) ;
 
 }

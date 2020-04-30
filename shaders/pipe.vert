@@ -14,6 +14,6 @@ uniform mat4 mv_matrix;
 void main() {
 
 	vs_out.tc = texCoord;
-	vs_out.pos = position;
 	gl_Position = pr_matrix * mv_matrix * position;
+	vs_out.pos = gl_Position;
 }

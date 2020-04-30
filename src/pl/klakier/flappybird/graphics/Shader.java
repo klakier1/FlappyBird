@@ -4,6 +4,8 @@ import pl.klakier.flappybird.math.Matrix4f;
 import pl.klakier.flappybird.math.Vector3f;
 import pl.klakier.flappybird.utils.BufferUtils;
 import pl.klakier.flappybird.utils.ShaderUtils;
+
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.opengl.GL20.*;
 
 import java.nio.FloatBuffer;
@@ -18,6 +20,7 @@ public class Shader {
 	public static Shader BG;
 	public static Shader BIRD;
 	public static Shader PIPE;
+	public static Shader FADE;
 
 	private boolean bound = false;
 	private final int ID;
@@ -27,10 +30,24 @@ public class Shader {
 		ID = ShaderUtils.load(vertPath, fragPath);
 	}
 
-	public static void loadAll() {
+	public static int loadAll() {
 		BG = new Shader("shaders/bg.vert", "shaders/bg.frag");
+		if (BG.ID == -1)
+			return -1;
+
 		BIRD = new Shader("shaders/bird.vert", "shaders/bird.frag");
+		if (BIRD.ID == -1)
+			return -2;
+
 		PIPE = new Shader("shaders/pipe.vert", "shaders/pipe.frag");
+		if (PIPE.ID == -1)
+			return -3;
+
+		FADE = new Shader("shaders/fade.vert", "shaders/fade.frag");
+		if (FADE.ID == -1)
+			return -4;
+
+		return 0;
 	}
 
 	public void bind() {

@@ -9,6 +9,7 @@ import pl.klakier.flappybird.math.Vector3f;
 
 public class Level {
 
+	private Fade fade;
 	private Bird bird;
 	private VertexArray vaoBackground;
 	private Texture texBackground;
@@ -20,8 +21,11 @@ public class Level {
 	private float tex_half_width;
 	private float xScroll = 0.0f;
 	private float xScrollStep = 0.0f;
-
+	private boolean animate = true;
+	boolean gameOver;
 	public Level() {
+		
+		gameOver = false;
 		texBackground = new Texture("res/bg.jpeg", 1);
 
 		quarterWidth = Main.quarterWidth;
@@ -64,22 +68,31 @@ public class Level {
 
 		bird = new Bird();
 		Pipe.create();
+		fade = new Fade(1500f);
 	}
 
 	public void onUpdate() {
-		xScroll -= xScrollStep;
-		if (xScroll < -(tex_half_width * 2))
-			xScroll = 0.0f;
+		if (animate) {
+			xScroll -= xScrollStep;
+			if (xScroll < -(tex_half_width * 2))
+				xScroll = 0.0f;
+		}
 
-		collision();
+		if (collision()) {
+			this.setAnimate(false);
+			Pipe.setAnimate(false);
+			bird.setControl(false);
+			gameOver = true;
+		}
 
 		Pipe.onUpdate();
 		bird.onUpdate();
 	}
 
 	public void render() {
-		Pipe.render();
+
 		Shader.BG.bind();
+		Shader.BG.setUniform2f("birdPos", bird.getPosVec().x, bird.getPosVec().y);
 		vaoBackground.bind();
 		for (int i = 0; i < map; i++) {
 			Vector3f translation = new Vector3f((float) i * (tex_half_width * 2) + xScroll, 0, 0);
@@ -89,8 +102,15 @@ public class Level {
 		vaoBackground.unBind();
 		Shader.BG.unBind();
 
-		Pipe.render();
+		Pipe.render(bird.getPosVec());
 		bird.render();
+
+		if (fade != null) {
+			if (fade.isDone())
+				fade = null;
+			else
+				fade.render();
+		}
 
 	}
 
@@ -113,10 +133,13 @@ public class Level {
 			pyB = pipes[i].getPosition().y - Pipe.getGap() / 2;
 
 			if (pxL < bxR && pxR > bxL) {
-				if (pyT < byT)
+				if (pyT < byT) {
 					pipes[i].setHasCollision(true);
-				else if (pyB > byB)
+					return true;
+				} else if (pyB > byB) {
 					pipes[i + 1].setHasCollision(true);
+					return true;
+				}
 			}
 		}
 
@@ -129,5 +152,17 @@ public class Level {
 
 	public void setxScrollStep(float xScrollStep) {
 		this.xScrollStep = xScrollStep;
+	}
+
+	public boolean isAnimate() {
+		return animate;
+	}
+
+	public void setAnimate(boolean animate) {
+		this.animate = animate;
+	}
+	
+	public boolean isGameOver() {
+		return gameOver;
 	}
 }

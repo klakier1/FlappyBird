@@ -24,12 +24,12 @@ public class Main implements Runnable {
 	// The window handle
 	private long window;
 	public static float aspectRatio = 16.0f / 9.0f;
-	public static float quarterWidth = 10f;
+	public static float quarterWidth = 1.7f;
 	private int width = 1280;
 	private int height = (int) ((float) width / aspectRatio);
-	public static final Matrix4f pr_matrix = Matrix4f.orthographic(-quarterWidth, quarterWidth, -quarterWidth / aspectRatio,
-			quarterWidth / aspectRatio, -1.0f, 1.0f);
-	
+	public static final Matrix4f pr_matrix = Matrix4f.orthographic(-quarterWidth, quarterWidth,
+			-quarterWidth / aspectRatio, quarterWidth / aspectRatio, -1.0f, 1.0f);
+
 	private Thread thread;
 	private Boolean running = false;
 
@@ -43,7 +43,7 @@ public class Main implements Runnable {
 
 	// FPS
 	private int fps;
-	
+
 	public static void main(String[] args) {
 
 		new Main().start();
@@ -59,25 +59,28 @@ public class Main implements Runnable {
 	@Override
 	public void run() {
 		init();
+		if (glfwWindowShouldClose(window))
+			running = false;
+
 		currentNanos = System.nanoTime();
-		prevNanos = currentNanos - (long)interval;
+		prevNanos = currentNanos - (long) interval;
 		while (running) {
 
 			while (currentNanos - prevNanos < interval) {
 				currentNanos = System.nanoTime();
 			}
 			prevNanos = currentNanos;
-			
+
 			update();
 			render();
 
 			if (glfwWindowShouldClose(window))
 				running = false;
 		}
-		
+
 		glfwDestroyWindow(window);
 		glfwTerminate();
-		
+
 	}
 
 	private void init() {
@@ -131,12 +134,21 @@ public class Main implements Runnable {
 		glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
 		// Enable depth test
-		//glEnable(GL_DEPTH_TEST);
+		// glEnable(GL_DEPTH_TEST);
+
+		// Enable blend
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		System.out.println(glGetString(GL_VERSION));
 
 		// Load Shader
-		Shader.loadAll();
+		int result;
+		if ((result = Shader.loadAll()) != 0) {
+			System.err.println("Shader no " + Math.abs(result));
+			glfwSetWindowShouldClose(window, true);
+			return;
+		}
 
 		level = new Level();
 
@@ -146,9 +158,12 @@ public class Main implements Runnable {
 		glfwPollEvents();
 
 		level.onUpdate();
-		
+
 		if (Input.isPressed(GLFW_KEY_ESCAPE))
 			glfwSetWindowShouldClose(window, true);
+
+		if (level.isGameOver() && Input.isPressed(GLFW_KEY_SPACE))
+			level = new Level();
 
 	}
 
@@ -157,9 +172,9 @@ public class Main implements Runnable {
 
 		level.render();
 
-		if(glGetError() != 0)
+		if (glGetError() != 0)
 			System.out.println(glGetError());
-		
+
 		glfwSwapBuffers(window); // swap the color buffers
 	}
 

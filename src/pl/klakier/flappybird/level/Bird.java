@@ -22,6 +22,7 @@ public class Bird {
 	private float yScrollStepFallDown = size / 200;
 	private float yScrollStepJump = size / 10;
 	private float delta;
+	private boolean control;
 
 	public Bird() {
 		texBird = new Texture("res/bird.png", 2);
@@ -56,6 +57,8 @@ public class Bird {
 		Shader.BIRD.setUniformMat4f("mv_matrix", Matrix4f.identity());
 		Shader.BIRD.unBind();
 
+		control = true;
+
 	}
 
 	public void onUpdate() {
@@ -64,7 +67,8 @@ public class Bird {
 		if (!outOfScreenDown)
 			posVec.y -= delta;
 		if (Input.isPressed(GLFW_KEY_SPACE)) {
-			delta = -yScrollStepJump;
+			if (control)
+				delta = -yScrollStepJump;
 			if (outOfScreenDown)
 				posVec.y -= delta;
 		} else {
@@ -88,5 +92,13 @@ public class Bird {
 
 	public Vector3f getPosVec() {
 		return posVec;
+	}
+
+	public boolean isControl() {
+		return control;
+	}
+
+	public void setControl(boolean control) {
+		this.control = control;
 	}
 }

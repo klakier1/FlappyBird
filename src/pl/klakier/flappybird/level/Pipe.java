@@ -20,7 +20,7 @@ public class Pipe {
 	private static float quarterHeight = quarterWidth / aspectRatio;
 	private static VertexArray vaoPipe;
 	private static Texture texPipe;
-	private static final float OFFSET = quarterWidth * 0.8f;
+	private static final float OFFSET = quarterWidth * 1.1f;
 	private static final float DISTANCE = quarterWidth * 0.3f;
 	private static final float GAP = quarterHeight * 0.7f;
 	private static final int COUNT = (int) ((quarterWidth / DISTANCE) + 1);
@@ -29,6 +29,7 @@ public class Pipe {
 	private static Pipe[] pipes;
 	private static Random random = new Random();
 	private static float X_SCROLL_STEP = quarterWidth / 140;
+	private static boolean animate = true;
 
 	public Pipe(Vector3f position, boolean isTop) {
 		this.position = position;
@@ -68,24 +69,27 @@ public class Pipe {
 	}
 
 	public static void onUpdate() {
-		for (int i = 0; i < COUNT * 2; i += 2) {
-			pipes[i].position.x -= X_SCROLL_STEP;
-			pipes[i + 1].position.x -= X_SCROLL_STEP;
+		if (animate) {
+			for (int i = 0; i < COUNT * 2; i += 2) {
+				pipes[i].position.x -= X_SCROLL_STEP;
+				pipes[i + 1].position.x -= X_SCROLL_STEP;
 
-			if (pipes[i].position.x < -quarterWidth - WIDTH) {
-				pipes[i].position.x = COUNT * DISTANCE;
-				pipes[i + 1].position.x = COUNT * DISTANCE;
+				if (pipes[i].position.x < -quarterWidth - WIDTH) {
+					pipes[i].position.x = COUNT * DISTANCE;
+					pipes[i + 1].position.x = COUNT * DISTANCE;
 
-				pipes[i].position.y = getRandomY();
-				pipes[i + 1].position.y = pipes[i].getPosition().y - HEIGHT - GAP;
+					pipes[i].position.y = getRandomY();
+					pipes[i + 1].position.y = pipes[i].getPosition().y - HEIGHT - GAP;
+				}
 			}
 		}
 
 	}
 
-	public static void render() {
+	public static void render(Vector3f birdPos) {
 		texPipe.bind(3);
 		Shader.PIPE.bind();
+		Shader.PIPE.setUniform2f("birdPos", birdPos.x, birdPos.y);
 		Shader.PIPE.setUniformMat4f("mv_matrix", Matrix4f.identity());
 		vaoPipe.bind();
 		for (Pipe pipe : pipes) {
@@ -99,6 +103,7 @@ public class Pipe {
 	}
 
 	public static void create() {
+		animate = true;
 		texPipe = new Texture("res/pipe.png", 3);
 
 		// @formatter:off
@@ -141,6 +146,14 @@ public class Pipe {
 
 	private static float getRandomY() {
 		return (random.nextFloat() - 0.5f) * (quarterWidth / 2);
+	}
+
+	public static boolean isAnimate() {
+		return animate;
+	}
+
+	public static void setAnimate(boolean animate) {
+		Pipe.animate = animate;
 	}
 
 }
