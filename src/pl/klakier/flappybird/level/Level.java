@@ -23,8 +23,9 @@ public class Level {
 	private float xScrollStep = 0.0f;
 	private boolean animate = true;
 	boolean gameOver;
+
 	public Level() {
-		
+
 		gameOver = false;
 		texBackground = new Texture("res/bg.jpeg", 1);
 
@@ -69,6 +70,21 @@ public class Level {
 		bird = new Bird();
 		Pipe.create();
 		fade = new Fade(1500f);
+
+		// set lighting params
+		Shader.BG.bind();
+		Shader.BG.setUniform1f("lightParam1", 3.0f);
+		Shader.BG.setUniform1f("lightParam2", 3.0f);
+		Shader.BG.setUniform1f("lightParam3", 0.5f);
+		Shader.BG.setUniform1f("scale", quarterWidth);
+		Shader.BG.unBind();
+
+		Shader.PIPE.bind();
+		Shader.PIPE.setUniform1f("lightParam1", 3.0f);
+		Shader.PIPE.setUniform1f("lightParam2", 3.0f);
+		Shader.PIPE.setUniform1f("lightParam3", 0.5f);
+		Shader.PIPE.setUniform1f("scale", quarterWidth);
+		Shader.PIPE.unBind();
 	}
 
 	public void onUpdate() {
@@ -161,7 +177,7 @@ public class Level {
 	public void setAnimate(boolean animate) {
 		this.animate = animate;
 	}
-	
+
 	public boolean isGameOver() {
 		return gameOver;
 	}

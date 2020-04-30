@@ -11,6 +11,10 @@ uniform sampler2D tex;
 uniform int isTop;
 uniform int hasColl;
 uniform vec2 birdPos;
+uniform float lightParam1;
+uniform float lightParam2;
+uniform float lightParam3;
+uniform float scale;
 
 void main() {
 	//color = (fs_in.pos + 10)/ 20; //postion to Color
@@ -23,9 +27,12 @@ void main() {
 	if (color.a != 1.0)
 		discard;
 
-	if (hasColl == 1)
-		color.r = 0.7;
+	color *= lightParam1
+			/ ((length(birdPos - fs_in.pos.xy) * (10 / scale)) + lightParam2)
+			+ lightParam3;
+	color.w = 1;
 
-	color *= length(birdPos - fs_in.pos.xy) ;
+	if (hasColl == 1)
+		color.w = 1; //for test
 
 }
