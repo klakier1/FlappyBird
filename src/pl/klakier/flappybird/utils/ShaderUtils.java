@@ -52,8 +52,8 @@ public class ShaderUtils {
 			return -1;
 		}
 		
-		//glDeleteShader(vertId);
-		//glDeleteShader(fragId);
+		glDeleteShader(vertId);
+		glDeleteShader(fragId);
 		
 		return program;
 	}
